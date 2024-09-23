@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge CSV Files</title>
+</head>
+<body>
+    <h1>Объединение CSV Файлов</h1>
+    <input type="file" id="fileInput" multiple accept=".csv">
+    <button id="mergeButton" disabled>Объединить и Сохранить</button>
+    <script >
+
+document.getElementById('fileInput').addEventListener('change', function(event) {
+    const files = event.target.files;
+    if (files.length > 0) {
+        document.getElementById('mergeButton').disabled = false;
+    } else {
+        document.getElementById('mergeButton').disabled = true;
+    }
+});
+
+document.getElementById('mergeButton').addEventListener('click', function() {
+    const files = document.getElementById('fileInput').files;
+    const mergedContent = [];
+
+    for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            mergedContent.push(event.target.result);
+            if (mergedContent.length === files.length) {
+                const mergedCsv = mergedContent.join('\n');
+                downloadMergedCsv(mergedCsv);
+            }
+        };
+        reader.readAsText(files[i]);
+    }
+});
+
+function downloadMergedCsv(content) {
+    const blob = new Blob([content], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'merged.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+
+
+    </script>
+</body>
+</html>
